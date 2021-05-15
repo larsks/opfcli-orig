@@ -1,43 +1,59 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
 	"fmt"
+    "log"
 
 	"github.com/spf13/cobra"
+
+    "github.com/operate-first/opfcli/models"
 )
 
-// createProjectCmd represents the createProject command
 var createProjectCmd = &cobra.Command{
-	Use:   "create-project",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Use:   "create-project projectName projectOwner",
+	Short: "Onboard a new project into Operate First",
+	Long: `Onboard a new project into Operate First.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+- Register a new group
+- Register a new namespace with appropriate role bindings for your group
+`,
     Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
         projectName = args[0]
         projectOwner = args[1]
 
-		fmt.Println("createProject called")
-        fmt.Println(appName)
+        ns := models.CreateNamespace(projectName, projectOwner, projectDescription)
+        group := models.CreateGroup(projectOwner)
+        komp := models.CreateKomponent()
+        rb := models.CreateRoleBinding(
+            fmt.Sprintf("namespace-admin-%s", projectOwner), "admin")
+        rb.Subjects = []models.Subject{
+            *models.CreateGroupSubject(projectOwner),
+        }
+
+        s, err := ns.ToYAML()
+        if err != nil {
+            log.Fatalf("error: %v", err)
+        }
+        fmt.Printf("%s\n", s)
+
+        s, err = group.ToYAML()
+        if err != nil {
+            log.Fatalf("error: %v", err)
+        }
+        fmt.Printf("%s\n", s)
+
+        s, err = komp.ToYAML()
+        if err != nil {
+            log.Fatalf("error: %v", err)
+        }
+        fmt.Printf("%s\n", s)
+
+        s, err = rb.ToYAML()
+        if err != nil {
+            log.Fatalf("error: %v", err)
+        }
+        fmt.Printf("%s\n", s)
 	},
 }
 
