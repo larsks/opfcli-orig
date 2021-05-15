@@ -22,6 +22,8 @@ var createProjectCmd = &cobra.Command{
         projectName = args[0]
         projectOwner = args[1]
 
+        log.Printf("application name: %s", config.Get("app-name"))
+
         ns := models.CreateNamespace(projectName, projectOwner, projectDescription)
         group := models.CreateGroup(projectOwner)
         komp := models.CreateKomponent()
