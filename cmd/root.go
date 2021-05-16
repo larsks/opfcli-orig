@@ -30,6 +30,7 @@ Use opfcli to interact with an Operate First style Kubernetes
 configuration repository.`,
 }
 
+// Execute processes the opfcli command line.
 func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }

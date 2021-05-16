@@ -10,7 +10,7 @@ import (
 	"github.com/operate-first/opfcli/models"
 )
 
-// Creates a kustomization.yaml adjacent to the given path.
+// WriteKustomization creates a kustomization.yaml adjacent to the given path.
 func WriteKustomization(path string, resources []string, components []string) {
 	kustom := models.CreateKustomization()
 
@@ -33,6 +33,8 @@ func WriteKustomization(path string, resources []string, components []string) {
 	}
 }
 
+// WriteComponent creates a Kustomization.yaml adjacent to the given path. This
+// creates a Component rather than a Kustomization.
 func WriteComponent(path string, resources []string) {
 	kustom := models.CreateKomponent()
 
@@ -51,6 +53,8 @@ func WriteComponent(path string, resources []string) {
 	}
 }
 
+// AddKustomizeComponent uses "kustomize edit add" to add a component
+// to an existing kustomization file.
 func AddKustomizeComponent(componentPath, kustomizePath string) {
 	kustomize := exec.Command(
 		"kustomize", "edit", "add", "component",

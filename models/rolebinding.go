@@ -4,18 +4,24 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Subject represents a participant in a RoleBinding.
 type Subject struct {
 	APIGroup string `yaml:"apiGroup"`
 	Kind     string
 	Name     string
 }
 
+// RoleBinding represents a Kubernetes RoleBinding object. It links
+// one or more subjects to a role.
 type RoleBinding struct {
 	Resource `yaml:",inline"`
 	RoleRef  Subject `yaml:"roleRef"`
 	Subjects []Subject
 }
 
+// CreateRoleBinding creates a new RoleBinding object. The
+// "name" parameter is used to initialize "metadata.name". The "role"
+// parameter is used to set the name of the "roleRef".
 func CreateRoleBinding(name string, role string) *RoleBinding {
 	if len(name) == 0 {
 		log.Fatal("a group requires a name")
@@ -39,6 +45,8 @@ func CreateRoleBinding(name string, role string) *RoleBinding {
 	return &rsrc
 }
 
+// CreateGroupSubject creates a new Subject referring
+// to the named group.
 func CreateGroupSubject(groupName string) *Subject {
 	rsrc := Subject{
 		APIGroup: "rbac.authorization.k8s.io",
@@ -49,6 +57,8 @@ func CreateGroupSubject(groupName string) *Subject {
 	return &rsrc
 }
 
+// AddGroup adds an entry for the named Group to the
+// list of subjects in the RoleBinding.
 func (rolebinding *RoleBinding) AddGroup(groupName string) {
 	sub := CreateGroupSubject(groupName)
 	if len(rolebinding.Subjects) == 0 {
