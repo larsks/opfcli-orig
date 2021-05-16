@@ -1,16 +1,17 @@
 package cmd
 
 import (
-	log "github.com/sirupsen/logrus"
 	"os/exec"
 	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/cobra"
 
 	"github.com/operate-first/opfcli/utils"
 )
 
-func addRBAC(projectName string) {
+func addMonitoringRBAC(projectName string) {
 	appName := config.GetString("app-name")
 	path := filepath.Join(repoDirectory, appName, NAMESPACE_PATH, projectName)
 
@@ -41,7 +42,7 @@ This will add a RoleBinding to the target namespace that permits
 Prometheus to access certain metrics about pods, services, etc.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		addRBAC(args[0])
+		addMonitoringRBAC(args[0])
 	},
 }
 

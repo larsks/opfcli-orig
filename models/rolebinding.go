@@ -39,12 +39,21 @@ func CreateRoleBinding(name string, role string) *RoleBinding {
 	return &rsrc
 }
 
-func CreateGroupSubject(name string) *Subject {
+func CreateGroupSubject(groupName string) *Subject {
 	rsrc := Subject{
 		APIGroup: "rbac.authorization.k8s.io",
 		Kind:     "Group",
-		Name:     name,
+		Name:     groupName,
 	}
 
 	return &rsrc
+}
+
+func (rolebinding *RoleBinding) AddGroup(groupName string) {
+	sub := CreateGroupSubject(groupName)
+	if len(rolebinding.Subjects) == 0 {
+		rolebinding.Subjects = []Subject{*sub}
+	} else {
+		rolebinding.Subjects = append(rolebinding.Subjects, *sub)
+	}
 }

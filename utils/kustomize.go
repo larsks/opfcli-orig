@@ -1,0 +1,66 @@
+package utils
+
+import (
+	"io/ioutil"
+	"os/exec"
+	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
+
+	"github.com/operate-first/opfcli/models"
+)
+
+// Creates a kustomization.yaml adjacent to the given path.
+func WriteKustomization(path string, resources []string, components []string) {
+	kustom := models.CreateKustomization()
+
+	if len(resources) > 0 {
+		kustom.Resources = resources
+	}
+
+	if len(components) > 0 {
+		kustom.Components = components
+	}
+
+	kustomOut := models.ToYAML(kustom)
+
+	err := ioutil.WriteFile(
+		filepath.Join(filepath.Dir(path), "kustomization.yaml"),
+		[]byte(kustomOut), 0644,
+	)
+	if err != nil {
+		log.Fatalf("failed to write kustomization: %v", err)
+	}
+}
+
+func WriteComponent(path string, resources []string) {
+	kustom := models.CreateKomponent()
+
+	if len(resources) > 0 {
+		kustom.Resources = resources
+	}
+
+	kustomOut := models.ToYAML(kustom)
+
+	err := ioutil.WriteFile(
+		filepath.Join(filepath.Dir(path), "kustomization.yaml"),
+		[]byte(kustomOut), 0644,
+	)
+	if err != nil {
+		log.Fatalf("failed to write kustomization: %v", err)
+	}
+}
+
+func AddKustomizeComponent(componentPath, kustomizePath string) {
+	kustomize := exec.Command(
+		"kustomize", "edit", "add", "component",
+		componentPath,
+	)
+	kustomize.Dir = kustomizePath
+
+	// NB: if the specified component does not exist, kustomize will fail to
+	// edit the file and emit a log message but will not return an error code.
+	if err := kustomize.Run(); err != nil {
+		log.Fatalf("failed to edit kustomization: %v", err)
+	}
+}
