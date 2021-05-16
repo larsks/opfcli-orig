@@ -2,6 +2,7 @@ package cmd
 
 import (
     "log"
+    "path/filepath"
     "strings"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -61,10 +62,15 @@ func initConfig() {
         }
 
         repoDirectory, err = utils.FindRepoDir()
-        if err == nil {
-            config.AddConfigPath(repoDirectory)
+        if err != nil {
+            repoDirectory, err = filepath.Abs(".")
+            if err != nil {
+                log.Fatalf("failed to determine repository directory: %v", err)
+            }
         }
+        log.Printf("using %s as repository directory", repoDirectory)
 
+        config.AddConfigPath(repoDirectory)
         config.ReadInConfig()
         log.Printf("read configuration from %s", config.ConfigFileUsed())
     }
