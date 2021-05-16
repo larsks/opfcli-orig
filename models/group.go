@@ -4,11 +4,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Group represents a group of users.
 type Group struct {
 	Resource `yaml:",inline"`
 	Users    []string
 }
 
+// CreateGroup creates a new Group object.
 func CreateGroup(name string) *Group {
 	if len(name) == 0 {
 		log.Fatal("a group requires a name")

@@ -1,3 +1,4 @@
+// Package cmd implements the commands supported by opfcli.
 package cmd
 
 const defaultAppName = "cluster-scope"
