@@ -1,17 +1,17 @@
 package cmd
 
 import (
-    log "github.com/sirupsen/logrus"
-    "os"
-    "path/filepath"
-    "strconv"
-    "strings"
+	log "github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-    "github.com/operate-first/opfcli/utils"
+	"github.com/operate-first/opfcli/utils"
 )
 
 var config = viper.New()
@@ -34,61 +34,61 @@ func Execute() {
 }
 
 func init() {
-    loglevel, err := strconv.Atoi(os.Getenv("OPF_LOGLEVEL"))
-    if err != nil {
-        loglevel = 1
-    }
+	loglevel, err := strconv.Atoi(os.Getenv("OPF_LOGLEVEL"))
+	if err != nil {
+		loglevel = 1
+	}
 
-    if loglevel >= 2 {
-        log.SetLevel(log.DebugLevel)
-    } else if loglevel >= 1 {
-        log.SetLevel(log.InfoLevel)
-    } else {
-        log.SetLevel(log.WarnLevel)
-    }
+	if loglevel >= 2 {
+		log.SetLevel(log.DebugLevel)
+	} else if loglevel >= 1 {
+		log.SetLevel(log.InfoLevel)
+	} else {
+		log.SetLevel(log.WarnLevel)
+	}
 
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVarP(
-        &cfgFile, "config", "f", "", "configuration file")
-    rootCmd.PersistentFlags().StringVarP(
-        &appName, "app-name", "a", "", "application name")
+		&cfgFile, "config", "f", "", "configuration file")
+	rootCmd.PersistentFlags().StringVarP(
+		&appName, "app-name", "a", "", "application name")
 
-    config.BindPFlag("app-name", rootCmd.PersistentFlags().Lookup("app-name"))
+	config.BindPFlag("app-name", rootCmd.PersistentFlags().Lookup("app-name"))
 }
 
 func initConfig() {
-    config.SetEnvPrefix("opf")
-    config.AutomaticEnv()
-    config.SetConfigName(".opfcli")
+	config.SetEnvPrefix("opf")
+	config.AutomaticEnv()
+	config.SetConfigName(".opfcli")
 
-    replacer := strings.NewReplacer("-", "_")
-    config.SetEnvKeyReplacer(replacer)
+	replacer := strings.NewReplacer("-", "_")
+	config.SetEnvKeyReplacer(replacer)
 
-    config.SetDefault("app-name", DEFAULT_APP_NAME)
+	config.SetDefault("app-name", DEFAULT_APP_NAME)
 
 	if cfgFile != "" {
 		config.SetConfigFile(cfgFile)
-        config.ReadInConfig()
-    } else {
+		config.ReadInConfig()
+	} else {
 		home, err := homedir.Dir()
-        if err == nil {
-            config.AddConfigPath(home)
-        }
+		if err == nil {
+			config.AddConfigPath(home)
+		}
 
-        repoDirectory, err = utils.FindRepoDir()
-        if err != nil {
-            repoDirectory, err = filepath.Abs(".")
-            if err != nil {
-                log.Fatalf("failed to determine repository directory: %v", err)
-            }
-        }
-        log.Debugf("using %s as repository directory", repoDirectory)
+		repoDirectory, err = utils.FindRepoDir()
+		if err != nil {
+			repoDirectory, err = filepath.Abs(".")
+			if err != nil {
+				log.Fatalf("failed to determine repository directory: %v", err)
+			}
+		}
+		log.Debugf("using %s as repository directory", repoDirectory)
 
-        config.AddConfigPath(repoDirectory)
-        config.ReadInConfig()
-        if config.ConfigFileUsed() != "" {
-            log.Printf("read configuration from %s", config.ConfigFileUsed())
-        }
-    }
+		config.AddConfigPath(repoDirectory)
+		config.ReadInConfig()
+		if config.ConfigFileUsed() != "" {
+			log.Printf("read configuration from %s", config.ConfigFileUsed())
+		}
+	}
 }
