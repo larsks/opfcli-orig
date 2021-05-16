@@ -9,12 +9,12 @@ type Namespace struct {
 	Resource `yaml:",inline"`
 }
 
-// CreateNamespace creates a new Namespace object. The object's
+// NewNamespace creates a new Namespace object. The object's
 // metadata.name is set to the value of the "name" parameter. The
 // "owner" and "description" parameters are used to initialize the
 // "openshift.io/requester" and ""openshift.io/display-name"
 // annotations.
-func CreateNamespace(name, owner, description string) *Namespace {
+func NewNamespace(name, owner, description string) Namespace {
 	if len(name) == 0 {
 		log.Fatal("a namespace requires a name")
 	}
@@ -38,5 +38,5 @@ func CreateNamespace(name, owner, description string) *Namespace {
 		rsrc.Metadata.Annotations["openshift.io/display-name"] = description
 	}
 
-	return &rsrc
+	return rsrc
 }

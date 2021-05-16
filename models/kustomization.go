@@ -13,8 +13,8 @@ type Kustomization struct {
 	Components []string `yaml:",omitempty"`
 }
 
-// CreateKustomization creates a new Kustomization object.
-func CreateKustomization() *Kustomization {
+// NewKustomization creates a new Kustomization object.
+func NewKustomization() Kustomization {
 	rsrc := Kustomization{
 		Komponent: Komponent{
 			Resource: Resource{
@@ -23,16 +23,16 @@ func CreateKustomization() *Kustomization {
 			},
 		},
 	}
-	return &rsrc
+	return rsrc
 }
 
-// CreateKomponent creates a new Komponent object.
-func CreateKomponent() *Komponent {
+// NewKomponent creates a new Komponent object.
+func NewKomponent() Komponent {
 	rsrc := Komponent{
 		Resource: Resource{
 			APIVersion: "kustomize.config.k8s.io/v1alpha1",
 			Kind:       "Component",
 		},
 	}
-	return &rsrc
+	return rsrc
 }
