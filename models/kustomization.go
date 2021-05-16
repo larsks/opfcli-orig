@@ -9,7 +9,7 @@ type Kustomization struct {
 func CreateKustomization() *Kustomization {
 	rsrc := Kustomization{
 		Resource: Resource{
-			ApiVersion: "kustomize.config.k8s.io/v1beta1",
+			APIVersion: "kustomize.config.k8s.io/v1beta1",
 			Kind:       "Kustomization",
 		},
 	}

@@ -19,7 +19,7 @@ func CreateNamespace(name, owner, description string) *Namespace {
 
 	rsrc := Namespace{
 		Resource: Resource{
-			ApiVersion: "v1",
+			APIVersion: "v1",
 			Kind:       "Namespace",
 			Metadata: Metadata{
 				Name:        name,

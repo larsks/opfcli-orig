@@ -9,7 +9,7 @@ type Metadata struct {
 }
 
 type Resource struct {
-	ApiVersion string `yaml:"apiVersion"`
+	APIVersion string `yaml:"apiVersion"`
 	Kind       string
 	Metadata   Metadata `yaml:",omitempty"`
 }

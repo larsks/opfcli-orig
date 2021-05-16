@@ -5,7 +5,7 @@ import (
 )
 
 type Subject struct {
-	ApiGroup string `yaml:"apiGroup"`
+	APIGroup string `yaml:"apiGroup"`
 	Kind     string
 	Name     string
 }
@@ -23,14 +23,14 @@ func CreateRoleBinding(name string, role string) *RoleBinding {
 
 	rsrc := RoleBinding{
 		Resource: Resource{
-			ApiVersion: "rbac.authorization.k8s.io/v1",
+			APIVersion: "rbac.authorization.k8s.io/v1",
 			Kind:       "RoleBinding",
 			Metadata: Metadata{
 				Name: name,
 			},
 		},
 		RoleRef: Subject{
-			ApiGroup: "rbac.authorization.k8s.io",
+			APIGroup: "rbac.authorization.k8s.io",
 			Kind:     "ClusterRole",
 			Name:     role,
 		},
@@ -41,7 +41,7 @@ func CreateRoleBinding(name string, role string) *RoleBinding {
 
 func CreateGroupSubject(name string) *Subject {
 	rsrc := Subject{
-		ApiGroup: "rbac.authorization.k8s.io",
+		APIGroup: "rbac.authorization.k8s.io",
 		Kind:     "Group",
 		Name:     name,
 	}

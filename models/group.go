@@ -16,7 +16,7 @@ func CreateGroup(name string) *Group {
 
 	rsrc := Group{
 		Resource: Resource{
-			ApiVersion: "user.openshift.io/v1",
+			APIVersion: "user.openshift.io/v1",
 			Kind:       "Group",
 			Metadata: Metadata{
 				Name: name,
