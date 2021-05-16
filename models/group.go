@@ -2,21 +2,11 @@ package models
 
 import (
 	log "github.com/sirupsen/logrus"
-
-	"gopkg.in/yaml.v2"
 )
 
 type Group struct {
 	Resource `yaml:",inline"`
 	Users    []string
-}
-
-func (rsrc *Group) ToYAML() string {
-	s, err := yaml.Marshal(&rsrc)
-	if err != nil {
-		log.Fatalf("failed converting resource to YAML: %v", err)
-	}
-	return string(s)
 }
 
 func CreateGroup(name string) *Group {

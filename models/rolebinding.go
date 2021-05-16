@@ -2,8 +2,6 @@ package models
 
 import (
 	log "github.com/sirupsen/logrus"
-
-	"gopkg.in/yaml.v2"
 )
 
 type Subject struct {
@@ -16,14 +14,6 @@ type RoleBinding struct {
 	Resource `yaml:",inline"`
 	RoleRef  Subject `yaml:"roleRef"`
 	Subjects []Subject
-}
-
-func (rsrc *RoleBinding) ToYAML() string {
-	s, err := yaml.Marshal(&rsrc)
-	if err != nil {
-		log.Fatalf("failed converting resource to YAML: %v", err)
-	}
-	return string(s)
 }
 
 func CreateRoleBinding(name string, role string) *RoleBinding {

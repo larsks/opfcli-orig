@@ -25,7 +25,7 @@ func writeKustomization(path string, resources []string, components []string) {
 		kustom.Components = components
 	}
 
-	kustomOut := kustom.ToYAML()
+	kustomOut := models.ToYAML(kustom)
 
 	err := ioutil.WriteFile(
 		filepath.Join(filepath.Dir(path), "kustomization.yaml"),
@@ -45,7 +45,7 @@ func createNamespace(projectName, projectOwner, projectDescription string) {
 	}
 
 	ns := models.CreateNamespace(projectName, projectOwner, projectDescription)
-	nsOut := ns.ToYAML()
+	nsOut := models.ToYAML(ns)
 
 	log.Printf("writing namespace definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -82,7 +82,7 @@ func createRoleBinding(projectName, projectOwner string) {
 	rbac.Subjects = []models.Subject{
 		*models.CreateGroupSubject(projectOwner),
 	}
-	rbacOut := rbac.ToYAML()
+	rbacOut := models.ToYAML(rbac)
 
 	log.Printf("writing rbac definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -110,8 +110,8 @@ func createGroup(projectName, projectOwner string) {
 		return
 	}
 
-	rbac := models.CreateGroup(projectOwner)
-	groupOut := rbac.ToYAML()
+	group := models.CreateGroup(projectOwner)
+	groupOut := models.ToYAML(group)
 
 	log.Printf("writing group definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
@@ -120,7 +120,7 @@ func createGroup(projectName, projectOwner string) {
 
 	err := ioutil.WriteFile(path, []byte(groupOut), 0644)
 	if err != nil {
-		log.Fatalf("failed to write rbac: %v", err)
+		log.Fatalf("failed to write group: %v", err)
 	}
 
 	writeKustomization(
