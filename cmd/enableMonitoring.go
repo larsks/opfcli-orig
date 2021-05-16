@@ -13,7 +13,7 @@ import (
 
 func addMonitoringRBAC(projectName string) {
 	appName := config.GetString("app-name")
-	path := filepath.Join(repoDirectory, appName, NAMESPACE_PATH, projectName)
+	path := filepath.Join(repoDirectory, appName, namespacePath, projectName)
 
 	if !utils.PathExists(path) {
 		log.Fatalf("namespace %s does not exist", projectName)
@@ -22,7 +22,7 @@ func addMonitoringRBAC(projectName string) {
 	log.Printf("enabling monitoring on namespace %s", projectName)
 	kustomize := exec.Command(
 		"kustomize", "edit", "add", "component",
-		filepath.Join(COMPONENT_REL_PATH, "monitoring-rbac"),
+		filepath.Join(componentRelPath, "monitoring-rbac"),
 	)
 	kustomize.Dir = path
 

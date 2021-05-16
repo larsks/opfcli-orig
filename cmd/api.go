@@ -13,7 +13,7 @@ import (
 
 func createNamespace(projectName, projectOwner, projectDescription string) {
 	appName := config.GetString("app-name")
-	path := filepath.Join(repoDirectory, appName, NAMESPACE_PATH, projectName, "namespace.yaml")
+	path := filepath.Join(repoDirectory, appName, namespacePath, projectName, "namespace.yaml")
 
 	if utils.PathExists(filepath.Dir(path)) {
 		log.Fatalf("namespace %s already exists", projectName)
@@ -36,7 +36,7 @@ func createNamespace(projectName, projectOwner, projectDescription string) {
 		path,
 		[]string{"namespace.yaml"},
 		[]string{
-			filepath.Join(COMPONENT_REL_PATH, "project-admin-rolebindings", projectOwner),
+			filepath.Join(componentRelPath, "project-admin-rolebindings", projectOwner),
 		},
 	)
 }
@@ -45,7 +45,7 @@ func createRoleBinding(projectName, groupName, roleName string) {
 	appName := config.GetString("app-name")
 	bindingName := fmt.Sprintf("project-%s-rolebindings", roleName)
 	path := filepath.Join(
-		repoDirectory, appName, COMPONENT_PATH,
+		repoDirectory, appName, componentPath,
 		bindingName, groupName, "rbac.yaml",
 	)
 
@@ -83,7 +83,7 @@ func createAdminRoleBinding(projectName, projectOwner string) {
 
 func createGroup(projectOwner string) {
 	appName := config.GetString("app-name")
-	path := filepath.Join(repoDirectory, appName, GROUP_PATH, projectOwner, "group.yaml")
+	path := filepath.Join(repoDirectory, appName, groupPath, projectOwner, "group.yaml")
 
 	if utils.PathExists(filepath.Dir(path)) {
 		log.Printf("group already exists (continuing)")
@@ -115,11 +115,11 @@ func addGroupRBAC(projectName, groupName, roleName string) {
 	bindingName := fmt.Sprintf("project-%s-rolebindings", roleName)
 
 	nsPath := filepath.Join(
-		repoDirectory, appName, NAMESPACE_PATH, projectName,
+		repoDirectory, appName, namespacePath, projectName,
 	)
 
 	groupPath := filepath.Join(
-		repoDirectory, appName, GROUP_PATH, groupName,
+		repoDirectory, appName, groupPath, groupName,
 	)
 
 	if !utils.PathExists(nsPath) {
@@ -134,7 +134,7 @@ func addGroupRBAC(projectName, groupName, roleName string) {
 
 	log.Printf("granting %s role %s on %s", groupName, roleName, projectName)
 	utils.AddKustomizeComponent(
-		filepath.Join(COMPONENT_REL_PATH, bindingName, groupName),
+		filepath.Join(componentRelPath, bindingName, groupName),
 		nsPath,
 	)
 }

@@ -65,7 +65,7 @@ func initConfig() {
 	replacer := strings.NewReplacer("-", "_")
 	config.SetEnvKeyReplacer(replacer)
 
-	config.SetDefault("app-name", DEFAULT_APP_NAME)
+	config.SetDefault("app-name", defaultAppName)
 
 	if cfgFile != "" {
 		config.SetConfigFile(cfgFile)
