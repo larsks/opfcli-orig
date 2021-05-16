@@ -10,9 +10,12 @@ type Namespace struct {
     Resource    `yaml:",inline"`
 }
 
-func (rsrc *Namespace) ToYAML() (string, error) {
+func (rsrc *Namespace) ToYAML() string {
     s, err := yaml.Marshal(&rsrc)
-    return string(s), err
+    if err != nil {
+        log.Fatalf("failed converting resource to YAML: %v", err)
+    }
+    return string(s)
 }
 
 func CreateNamespace(name, owner, description string) *Namespace {

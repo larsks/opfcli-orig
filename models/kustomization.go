@@ -1,46 +1,30 @@
 package models
 
 import (
+    "log"
+
     "gopkg.in/yaml.v2"
 )
 
-type Komponent struct {
-    Resource    `yaml:",inline"`
-    Resources   []string
-}
-
 type Kustomization struct {
-    Komponent
-    Components []string
+    Resource                `yaml:",inline"`
+    Resources   []string    `yaml:",omitempty"`
+    Components  []string    `yaml:",omitempty"`
 }
 
-func (rsrc *Komponent) ToYAML() (string, error) {
+func (rsrc *Kustomization) ToYAML() string {
     s, err := yaml.Marshal(&rsrc)
-    return string(s), err
-}
-
-func (rsrc *Kustomization) ToYAML() (string, error) {
-    s, err := yaml.Marshal(&rsrc)
-    return string(s), err
-}
-
-func CreateKomponent() *Komponent {
-    rsrc := Komponent{
-        Resource: Resource{
-            ApiVersion: "kustomize.config.k8s.io/v1beta1",
-            Kind: "Component",
-        },
+    if err != nil {
+        log.Fatalf("failed converting resource to YAML: %v", err)
     }
-    return &rsrc
+    return string(s)
 }
 
 func CreateKustomization() *Kustomization {
     rsrc := Kustomization{
-        Komponent: Komponent{
-            Resource: Resource{
-                ApiVersion: "kustomize.config.k8s.io/v1beta1",
-                Kind: "Kustomization",
-            },
+        Resource: Resource{
+            ApiVersion: "kustomize.config.k8s.io/v1beta1",
+            Kind: "Kustomization",
         },
     }
     return &rsrc

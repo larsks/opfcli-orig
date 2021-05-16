@@ -15,34 +15,23 @@ var config = viper.New()
 
 var cfgFile string
 var appName string
+var repoDirectory string
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "opfcli",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "A command line tool for Operate First GitOps",
+	Long: `A command line tool for Operate First GitOps.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+Use opfcli to interact with an Operate First style Kubernetes
+configuration repository.`,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVarP(
         &cfgFile, "config", "f", "", "configuration file")
@@ -52,7 +41,6 @@ func init() {
     config.BindPFlag("app-name", rootCmd.PersistentFlags().Lookup("app-name"))
 }
 
-// initConfig reads in config file and ENV variables if set.
 func initConfig() {
     config.SetEnvPrefix("opf")
     config.AutomaticEnv()
@@ -72,9 +60,9 @@ func initConfig() {
             config.AddConfigPath(home)
         }
 
-        repodir, err := utils.FindRepoDir()
+        repoDirectory, err = utils.FindRepoDir()
         if err == nil {
-            config.AddConfigPath(repodir)
+            config.AddConfigPath(repoDirectory)
         }
 
         config.ReadInConfig()

@@ -1,18 +1,3 @@
-/*
-Copyright © 2021 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
@@ -21,16 +6,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// enableMonitoringCmd represents the enableMonitoring command
 var enableMonitoringCmd = &cobra.Command{
 	Use:   "enable-monitoring",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Enable monitoring for a Kubernetes namespace",
+	Long: `Enable monitoring fora Kubernetes namespace.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+This will add a RoleBinding to the target namespace that permits
+Prometheus to access certain metrics about pods, services, etc.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("enableMonitoring called")
 	},
@@ -38,14 +20,4 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(enableMonitoringCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// enableMonitoringCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// enableMonitoringCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

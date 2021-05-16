@@ -1,13 +1,133 @@
 package cmd
 
 import (
-	"fmt"
+    "fmt"
+    "io/ioutil"
     "log"
+    "os"
+    "path/filepath"
 
 	"github.com/spf13/cobra"
 
     "github.com/operate-first/opfcli/models"
+    "github.com/operate-first/opfcli/utils"
 )
+
+func writeKustomization(path string, resources []string, components []string) {
+    kustom := models.CreateKustomization()
+
+    if len(resources) > 0 {
+        kustom.Resources = resources
+    }
+
+    if len(components) > 0 {
+        kustom.Components = components
+    }
+
+    kustom_out := kustom.ToYAML()
+
+    err := ioutil.WriteFile(
+        filepath.Join(filepath.Dir(path), "kustomization.yaml"),
+        []byte(kustom_out), 0644,
+    )
+    if err != nil {
+        log.Fatalf("failed to write kustomization: %v", err)
+    }
+}
+
+func createNamespace() {
+    appName := config.GetString("app-name")
+    path := filepath.Join(repoDirectory, appName, NAMESPACE_PATH, projectName, "namespaces.yaml")
+
+    if utils.PathExists(filepath.Dir(path)) {
+        log.Fatalf("namespace %s already exists", projectName)
+    }
+
+    ns := models.CreateNamespace(projectName, projectOwner, projectDescription)
+    ns_out := ns.ToYAML()
+
+    log.Printf("writing namespace definition to %s", filepath.Dir(path))
+    if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+        log.Fatalf("failed to create namespace directory: %v", err)
+    }
+
+    err := ioutil.WriteFile(path, []byte(ns_out), 0644)
+    if err != nil {
+        log.Fatalf("failed to write namespace file: %v", err)
+    }
+
+    writeKustomization(
+        path,
+        []string{"namespace.yaml"},
+        []string{
+            filepath.Join(COMPONENT_REL_PATH, "project-admin-rolebindings", projectOwner),
+        },
+    )
+}
+
+func createRoleBinding() {
+    appName := config.GetString("app-name")
+    path := filepath.Join(repoDirectory, appName, COMPONENT_PATH, "project-admin-rolebindings", projectOwner, "rbac.yaml")
+
+    if utils.PathExists(filepath.Dir(path)) {
+        log.Printf("rolebinding already exists (continuing)")
+        return
+    }
+
+    rbac := models.CreateRoleBinding(
+        fmt.Sprintf("namespace-admin-%s", projectOwner),
+        "admin",
+    )
+    rbac.Subjects = []models.Subject{
+        *models.CreateGroupSubject(projectOwner),
+    }
+    rbac_out := rbac.ToYAML()
+
+    log.Printf("writing rbac definition to %s", filepath.Dir(path))
+    if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+        log.Fatalf("failed to create rolebinding directory: %v", err)
+    }
+
+    err := ioutil.WriteFile(path, []byte(rbac_out), 0644)
+    if err != nil {
+        log.Fatalf("failed to write rbac: %v", err)
+    }
+
+    writeKustomization(
+        path,
+        []string{"rbac.yaml"},
+        nil,
+    )
+}
+
+func createGroup() {
+    appName := config.GetString("app-name")
+    path := filepath.Join(repoDirectory, appName, GROUP_PATH, projectOwner, "group.yaml")
+
+    if utils.PathExists(filepath.Dir(path)) {
+        log.Printf("group already exists (continuing)")
+        return
+    }
+
+    rbac := models.CreateGroup(projectOwner)
+    group_out := rbac.ToYAML()
+
+    log.Printf("writing group definition to %s", filepath.Dir(path))
+    if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+        log.Fatalf("failed to create group directory: %v", err)
+    }
+
+    err := ioutil.WriteFile(path, []byte(group_out), 0644)
+    if err != nil {
+        log.Fatalf("failed to write rbac: %v", err)
+    }
+
+    writeKustomization(
+        path,
+        []string{"group.yaml"},
+        nil,
+    )
+}
 
 var createProjectCmd = &cobra.Command{
 	Use:   "create-project projectName projectOwner",
@@ -22,40 +142,9 @@ var createProjectCmd = &cobra.Command{
         projectName = args[0]
         projectOwner = args[1]
 
-        log.Printf("application name: %s", config.Get("app-name"))
-
-        ns := models.CreateNamespace(projectName, projectOwner, projectDescription)
-        group := models.CreateGroup(projectOwner)
-        komp := models.CreateKomponent()
-        rb := models.CreateRoleBinding(
-            fmt.Sprintf("namespace-admin-%s", projectOwner), "admin")
-        rb.Subjects = []models.Subject{
-            *models.CreateGroupSubject(projectOwner),
-        }
-
-        s, err := ns.ToYAML()
-        if err != nil {
-            log.Fatalf("error: %v", err)
-        }
-        fmt.Printf("%s\n", s)
-
-        s, err = group.ToYAML()
-        if err != nil {
-            log.Fatalf("error: %v", err)
-        }
-        fmt.Printf("%s\n", s)
-
-        s, err = komp.ToYAML()
-        if err != nil {
-            log.Fatalf("error: %v", err)
-        }
-        fmt.Printf("%s\n", s)
-
-        s, err = rb.ToYAML()
-        if err != nil {
-            log.Fatalf("error: %v", err)
-        }
-        fmt.Printf("%s\n", s)
+        createNamespace()
+        createRoleBinding()
+        createGroup()
 	},
 }
 
@@ -66,15 +155,6 @@ var projectName string
 func init() {
 	rootCmd.AddCommand(createProjectCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// createProjectCmd.PersistentFlags().String("foo", "", "A help for foo")
     createProjectCmd.PersistentFlags().StringVarP(
         &projectDescription, "description", "d", "", "Team description")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// createProjectCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

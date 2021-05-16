@@ -18,9 +18,12 @@ type RoleBinding struct {
     Subjects []Subject
 }
 
-func (rsrc *RoleBinding) ToYAML() (string, error) {
+func (rsrc *RoleBinding) ToYAML() string {
     s, err := yaml.Marshal(&rsrc)
-    return string(s), err
+    if err != nil {
+        log.Fatalf("failed converting resource to YAML: %v", err)
+    }
+    return string(s)
 }
 
 func CreateRoleBinding(name string, role string) *RoleBinding {

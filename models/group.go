@@ -11,9 +11,12 @@ type Group struct {
     Users []string
 }
 
-func (rsrc *Group) ToYAML() (string, error) {
+func (rsrc *Group) ToYAML() string {
     s, err := yaml.Marshal(&rsrc)
-    return string(s), err
+    if err != nil {
+        log.Fatalf("failed converting resource to YAML: %v", err)
+    }
+    return string(s)
 }
 
 func CreateGroup(name string) *Group {
