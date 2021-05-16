@@ -35,7 +35,7 @@ func writeKustomization(path string, resources []string, components []string) {
     }
 }
 
-func createNamespace() {
+func createNamespace(projectName, projectOwner, projectDescription string) {
     appName := config.GetString("app-name")
     path := filepath.Join(repoDirectory, appName, NAMESPACE_PATH, projectName, "namespaces.yaml")
 
@@ -65,7 +65,7 @@ func createNamespace() {
     )
 }
 
-func createRoleBinding() {
+func createRoleBinding(projectName, projectOwner string) {
     appName := config.GetString("app-name")
     path := filepath.Join(repoDirectory, appName, COMPONENT_PATH, "project-admin-rolebindings", projectOwner, "rbac.yaml")
 
@@ -100,7 +100,7 @@ func createRoleBinding() {
     )
 }
 
-func createGroup() {
+func createGroup(projectName, projectOwner string) {
     appName := config.GetString("app-name")
     path := filepath.Join(repoDirectory, appName, GROUP_PATH, projectOwner, "group.yaml")
 
@@ -139,22 +139,19 @@ var createProjectCmd = &cobra.Command{
 `,
     Args: cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-        projectName = args[0]
-        projectOwner = args[1]
+        projectName := args[0]
+        projectOwner := args[1]
+        projectDescription := cmd.Flag("description").Value.String()
 
-        createNamespace()
-        createRoleBinding()
-        createGroup()
+        createNamespace(projectName, projectOwner, projectDescription)
+        createRoleBinding(projectName, projectOwner)
+        createGroup(projectName, projectOwner)
 	},
 }
-
-var projectDescription string
-var projectOwner string
-var projectName string
 
 func init() {
 	rootCmd.AddCommand(createProjectCmd)
 
-    createProjectCmd.PersistentFlags().StringVarP(
-        &projectDescription, "description", "d", "", "Team description")
+    createProjectCmd.PersistentFlags().StringP(
+        "description", "d", "", "Team description")
 }
