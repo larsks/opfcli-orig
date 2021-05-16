@@ -72,6 +72,8 @@ func initConfig() {
 
         config.AddConfigPath(repoDirectory)
         config.ReadInConfig()
-        log.Printf("read configuration from %s", config.ConfigFileUsed())
+        if config.ConfigFileUsed() != "" {
+            log.Printf("read configuration from %s", config.ConfigFileUsed())
+        }
     }
 }
