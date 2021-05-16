@@ -1,8 +1,10 @@
 package cmd
 
 import (
-    "log"
+    log "github.com/sirupsen/logrus"
+    "os"
     "path/filepath"
+    "strconv"
     "strings"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -32,6 +34,19 @@ func Execute() {
 }
 
 func init() {
+    loglevel, err := strconv.Atoi(os.Getenv("OPF_LOGLEVEL"))
+    if err != nil {
+        loglevel = 1
+    }
+
+    if loglevel >= 2 {
+        log.SetLevel(log.DebugLevel)
+    } else if loglevel >= 1 {
+        log.SetLevel(log.InfoLevel)
+    } else {
+        log.SetLevel(log.WarnLevel)
+    }
+
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVarP(
@@ -68,7 +83,7 @@ func initConfig() {
                 log.Fatalf("failed to determine repository directory: %v", err)
             }
         }
-        log.Printf("using %s as repository directory", repoDirectory)
+        log.Debugf("using %s as repository directory", repoDirectory)
 
         config.AddConfigPath(repoDirectory)
         config.ReadInConfig()
