@@ -12,7 +12,7 @@ import (
 
 // WriteKustomization creates a kustomization.yaml adjacent to the given path.
 func WriteKustomization(path string, resources []string, components []string) {
-	kustom := models.CreateKustomization()
+	kustom := models.NewKustomization()
 
 	if len(resources) > 0 {
 		kustom.Resources = resources
@@ -26,7 +26,7 @@ func WriteKustomization(path string, resources []string, components []string) {
 
 	err := ioutil.WriteFile(
 		filepath.Join(filepath.Dir(path), "kustomization.yaml"),
-		[]byte(kustomOut), 0644,
+		kustomOut, 0644,
 	)
 	if err != nil {
 		log.Fatalf("failed to write kustomization: %v", err)
@@ -36,7 +36,7 @@ func WriteKustomization(path string, resources []string, components []string) {
 // WriteComponent creates a Kustomization.yaml adjacent to the given path. This
 // creates a Component rather than a Kustomization.
 func WriteComponent(path string, resources []string) {
-	kustom := models.CreateKomponent()
+	kustom := models.NewKomponent()
 
 	if len(resources) > 0 {
 		kustom.Resources = resources

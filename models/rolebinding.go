@@ -19,10 +19,10 @@ type RoleBinding struct {
 	Subjects []Subject
 }
 
-// CreateRoleBinding creates a new RoleBinding object. The
+// NewRoleBinding creates a new RoleBinding object. The
 // "name" parameter is used to initialize "metadata.name". The "role"
 // parameter is used to set the name of the "roleRef".
-func CreateRoleBinding(name string, role string) *RoleBinding {
+func NewRoleBinding(name string, role string) RoleBinding {
 	if len(name) == 0 {
 		log.Fatal("a group requires a name")
 	}
@@ -42,28 +42,28 @@ func CreateRoleBinding(name string, role string) *RoleBinding {
 		},
 		Subjects: make([]Subject, 0),
 	}
-	return &rsrc
+	return rsrc
 }
 
-// CreateGroupSubject creates a new Subject referring
+// NewGroupSubject creates a new Subject referring
 // to the named group.
-func CreateGroupSubject(groupName string) *Subject {
+func NewGroupSubject(groupName string) Subject {
 	rsrc := Subject{
 		APIGroup: "rbac.authorization.k8s.io",
 		Kind:     "Group",
 		Name:     groupName,
 	}
 
-	return &rsrc
+	return rsrc
 }
 
 // AddGroup adds an entry for the named Group to the
 // list of subjects in the RoleBinding.
 func (rolebinding *RoleBinding) AddGroup(groupName string) {
-	sub := CreateGroupSubject(groupName)
+	sub := NewGroupSubject(groupName)
 	if len(rolebinding.Subjects) == 0 {
-		rolebinding.Subjects = []Subject{*sub}
+		rolebinding.Subjects = []Subject{sub}
 	} else {
-		rolebinding.Subjects = append(rolebinding.Subjects, *sub)
+		rolebinding.Subjects = append(rolebinding.Subjects, sub)
 	}
 }

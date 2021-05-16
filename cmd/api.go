@@ -19,7 +19,7 @@ func createNamespace(projectName, projectOwner, projectDescription string) {
 		log.Fatalf("namespace %s already exists", projectName)
 	}
 
-	ns := models.CreateNamespace(projectName, projectOwner, projectDescription)
+	ns := models.NewNamespace(projectName, projectOwner, projectDescription)
 	nsOut := models.ToYAML(ns)
 
 	log.Printf("writing namespace definition to %s", filepath.Dir(path))
@@ -27,7 +27,7 @@ func createNamespace(projectName, projectOwner, projectDescription string) {
 		log.Fatalf("failed to create namespace directory: %v", err)
 	}
 
-	err := ioutil.WriteFile(path, []byte(nsOut), 0644)
+	err := ioutil.WriteFile(path, nsOut, 0644)
 	if err != nil {
 		log.Fatalf("failed to write namespace file: %v", err)
 	}
@@ -54,7 +54,7 @@ func createRoleBinding(projectName, groupName, roleName string) {
 		return
 	}
 
-	rbac := models.CreateRoleBinding(
+	rbac := models.NewRoleBinding(
 		fmt.Sprintf("namespace-%s-%s", roleName, groupName),
 		roleName,
 	)
@@ -66,7 +66,7 @@ func createRoleBinding(projectName, groupName, roleName string) {
 		log.Fatalf("failed to create rolebinding directory: %v", err)
 	}
 
-	err := ioutil.WriteFile(path, []byte(rbacOut), 0644)
+	err := ioutil.WriteFile(path, rbacOut, 0644)
 	if err != nil {
 		log.Fatalf("failed to write rbac: %v", err)
 	}
@@ -90,7 +90,7 @@ func createGroup(projectOwner string) {
 		return
 	}
 
-	group := models.CreateGroup(projectOwner)
+	group := models.NewGroup(projectOwner)
 	groupOut := models.ToYAML(group)
 
 	log.Printf("writing group definition to %s", filepath.Dir(path))
@@ -98,7 +98,7 @@ func createGroup(projectOwner string) {
 		log.Fatalf("failed to create group directory: %v", err)
 	}
 
-	err := ioutil.WriteFile(path, []byte(groupOut), 0644)
+	err := ioutil.WriteFile(path, groupOut, 0644)
 	if err != nil {
 		log.Fatalf("failed to write group: %v", err)
 	}

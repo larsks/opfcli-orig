@@ -9,10 +9,10 @@ import (
 
 // ToYAML converts a struct into a YAML string. If unable to marshal the
 // struct, it prints an error and exits.
-func ToYAML(resource interface{}) string {
+func ToYAML(resource interface{}) []byte {
 	s, err := yaml.Marshal(&resource)
 	if err != nil {
 		log.Fatalf("failed converting resource to YAML: %v", err)
 	}
-	return string(s)
+	return s
 }
