@@ -2,8 +2,9 @@ package utils
 
 import (
 	"errors"
-	log "github.com/sirupsen/logrus"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func PathExists(path string) bool {
@@ -12,9 +13,8 @@ func PathExists(path string) bool {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return false
-		} else {
-			log.Fatalf("unable to check for %s: %v", path, err)
 		}
+		log.Fatalf("unable to check for %s: %v", path, err)
 	}
 
 	return true
@@ -26,9 +26,8 @@ func PathIsDirectory(path string) bool {
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return false
-		} else {
-			log.Fatalf("unable to check for %s: %v", path, err)
 		}
+		log.Fatalf("unable to check for %s: %v", path, err)
 	}
 
 	return info.IsDir()

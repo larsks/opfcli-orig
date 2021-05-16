@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/cobra"
 
@@ -24,11 +25,11 @@ func writeKustomization(path string, resources []string, components []string) {
 		kustom.Components = components
 	}
 
-	kustom_out := kustom.ToYAML()
+	kustomOut := kustom.ToYAML()
 
 	err := ioutil.WriteFile(
 		filepath.Join(filepath.Dir(path), "kustomization.yaml"),
-		[]byte(kustom_out), 0644,
+		[]byte(kustomOut), 0644,
 	)
 	if err != nil {
 		log.Fatalf("failed to write kustomization: %v", err)
@@ -44,14 +45,14 @@ func createNamespace(projectName, projectOwner, projectDescription string) {
 	}
 
 	ns := models.CreateNamespace(projectName, projectOwner, projectDescription)
-	ns_out := ns.ToYAML()
+	nsOut := ns.ToYAML()
 
 	log.Printf("writing namespace definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		log.Fatalf("failed to create namespace directory: %v", err)
 	}
 
-	err := ioutil.WriteFile(path, []byte(ns_out), 0644)
+	err := ioutil.WriteFile(path, []byte(nsOut), 0644)
 	if err != nil {
 		log.Fatalf("failed to write namespace file: %v", err)
 	}
@@ -81,14 +82,14 @@ func createRoleBinding(projectName, projectOwner string) {
 	rbac.Subjects = []models.Subject{
 		*models.CreateGroupSubject(projectOwner),
 	}
-	rbac_out := rbac.ToYAML()
+	rbacOut := rbac.ToYAML()
 
 	log.Printf("writing rbac definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		log.Fatalf("failed to create rolebinding directory: %v", err)
 	}
 
-	err := ioutil.WriteFile(path, []byte(rbac_out), 0644)
+	err := ioutil.WriteFile(path, []byte(rbacOut), 0644)
 	if err != nil {
 		log.Fatalf("failed to write rbac: %v", err)
 	}
@@ -110,14 +111,14 @@ func createGroup(projectName, projectOwner string) {
 	}
 
 	rbac := models.CreateGroup(projectOwner)
-	group_out := rbac.ToYAML()
+	groupOut := rbac.ToYAML()
 
 	log.Printf("writing group definition to %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		log.Fatalf("failed to create group directory: %v", err)
 	}
 
-	err := ioutil.WriteFile(path, []byte(group_out), 0644)
+	err := ioutil.WriteFile(path, []byte(groupOut), 0644)
 	if err != nil {
 		log.Fatalf("failed to write rbac: %v", err)
 	}
