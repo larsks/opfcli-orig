@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/operate-first/opfcli/models"
 )
 
-type Resource struct {
+type APIResource struct {
 	Name       string `json:"name"`
 	Namespaced bool   `json:"namespaced"`
 	Kind       string `json:"kind"`
@@ -15,10 +17,18 @@ type Resource struct {
 	Apigroup   string `json:"apiGroup"`
 }
 
+type APIResourceNotFoundError struct {
+	Name string
+}
+
+func (err *APIResourceNotFoundError) Error() string {
+	return fmt.Sprintf("Resource %s not found", err.Name)
+}
+
 //go:embed apiresources.json
 var apiresourcesJson []byte
-var APIResources []Resource
-var APIResourceMap map[string]Resource = make(map[string]Resource)
+var APIResources []APIResource
+var APIResourceMap map[string]APIResource = make(map[string]APIResource)
 
 func init() {
 	json.Unmarshal(apiresourcesJson, &APIResources)
@@ -33,11 +43,37 @@ func init() {
 	}
 }
 
-func (resource Resource) String() string {
+func (resource APIResource) String() string {
 	out, err := json.MarshalIndent(resource, "", "  ")
 	if err != nil {
 		panic(err)
 	}
 
 	return string(out)
+}
+
+func ResourcePath(resource models.Resource) (string, error) {
+	var apigroup string
+
+	if strings.Contains(resource.APIVersion, "/") {
+		parts := strings.Split(resource.APIVersion, "/")
+		apigroup = parts[0]
+	} else {
+		apigroup = "core"
+	}
+
+	key := fmt.Sprintf("%s/%s", apigroup, resource.Kind)
+	if spec, ok := APIResourceMap[key]; ok {
+		path := fmt.Sprintf(
+			"%s/%s/%s/%s",
+			spec.Apigroup,
+			spec.Name,
+			resource.Metadata.Name,
+			fmt.Sprintf("%s.yaml", strings.ToLower(spec.Kind)),
+		)
+
+		return path, nil
+
+	}
+	return "", &APIResourceNotFoundError{Name: key}
 }
