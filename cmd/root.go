@@ -41,11 +41,12 @@ func init() {
 		loglevel = 1
 	}
 
-	if loglevel >= 2 {
+	switch {
+	case loglevel >= 2:
 		log.SetLevel(log.DebugLevel)
-	} else if loglevel >= 1 {
+	case loglevel >= 1:
 		log.SetLevel(log.InfoLevel)
-	} else {
+	default:
 		log.SetLevel(log.WarnLevel)
 	}
 
