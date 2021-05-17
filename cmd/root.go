@@ -55,7 +55,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&cfgFile, "config", "f", "", "configuration file")
 	rootCmd.PersistentFlags().StringVarP(
-		&appName, "app-name", "a", "", "application name")
+		&appName, "app-name", "a", "cluster-scope", "application name")
 	rootCmd.PersistentFlags().StringVarP(
 		&repoDirectory, "repodir", "R", "", "path to opf repository")
 
